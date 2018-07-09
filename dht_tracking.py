@@ -9,7 +9,7 @@ sensor_args = { '11': Adafruit_DHT.DHT11,
                 '2302': Adafruit_DHT.AM2302 }
 if len(sys.argv) == 3 and sys.argv[1] in sensor_args:
     sensor = sensor_args[sys.argv[1]]
-    pin = sys.argv[2]    
+    pin = sys.argv[2]
 else:
     sensor = Adafruit_DHT.DHT11
     pin = 4
@@ -25,7 +25,9 @@ while True:
         humidity = round(humidity, 1)
         temperature = round(temperature, 1)
         print('Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity))
+        plt.ylim(0, 100)
         plt.subplot(1, 2, 1).scatter(i, humidity)
+        plt.ylim(-273, 100)
         plt.subplot(1, 2, 2).scatter(i, temperature)
         plt.draw()
         plt.pause(1)
