@@ -4,6 +4,7 @@ import time
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import matplotlib.dates as mdates
+import sqlite3
 
 # Parse command line parameters.
 sensor_args = { '11': Adafruit_DHT.DHT11,
@@ -18,16 +19,10 @@ else:
     print('Picking default configuration...')
     print('sensor : ' + str(sensor) + ', pin : ' + str(pin))
 
-plt.show()
-figure = plt.figure()
-ax = figure.add_subplot(2, 1, 1)
-locs, labels = plt.xticks()
-ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M'))
-plt.setp(labels, rotation=90)
-
-max_temperature = (-273, [datetime.now()])
-annotations = list()
+connection = sqlite3.connect('dht11.db')
+cursor = connection.cursor()
+cursor.execute('create table if not exists dht11_info (id integer primary key autoincrement)
+# TODO
 
 while True:
     humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
@@ -37,35 +32,8 @@ while True:
         temperature = round(temperature, 1)
         current_time = datetime.now()
 
-        temperaturePlot = plt.subplot(2, 1, 1)
-        plt.ylim([-273, 100])
-
-        earliest_time = current_time - timedelta(day=1)
-        plt.xlim([earliest_time, current_time])
-
-        if max_temperature[0] < temperature:
-            max_temperature = (temperature, [current_time])
-            for annotation in annotations:
-                annotation.remove()
-            annotations.clear()
-        elif max_temperature[0] == temperature:
-            max_temperature[1].append(current_time)
-
-
-        for xmax in max_temperature[1]:
-            annotation = temperaturePlot.annotate("{:.1f}".format(max_temperature[0]),
-                                          xy=(current_time, max_temperature[0]),
-                                          xytext=(xmax, max_temperature[0] + 10),
-                                          color = 'black',
-                                          fontsize=12)
-            annotations.append(annotation)
-
         print('Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity))
-
-        temperaturePlot.scatter(current_time, temperature)
-        plt.draw()
-        plt.pause(1)
     else:
         print('Failed to get reading. Try again!')
 
-    time.sleep(59)
+    time.sleep(60 * 20)
