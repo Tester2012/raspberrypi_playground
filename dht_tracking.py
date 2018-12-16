@@ -21,7 +21,7 @@ else:
 
 connection = sqlite3.connect('dht11.db')
 cursor = connection.cursor()
-cursor.execute('create table if not exists dht11_info (id integer primary key autoincrement)
+cursor.execute('create table if not exists dht11_info (id integer primary key autoincrement')
 # TODO
 
 while True:
